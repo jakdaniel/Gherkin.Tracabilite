@@ -4,7 +4,7 @@
 
 **Blocked by:** 09, 10
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 - [ ] SCN001 sur la ligne du Résultat attendu dont la Clé n'a aucune Vérification
 - [ ] SCN002 : chaîne littérale, Clé d'un autre Scénario ou valeur non constante, avec la cause et la liste des Clés disponibles dans le message
@@ -12,3 +12,7 @@
 - [ ] Plusieurs Vérifications d'une même Clé acceptées
 - [ ] `nameof(...)` et constante directe acceptés pour l'argument `cle`
 - [ ] Tests en mémoire couvrant code, emplacement et message de chaque diagnostic
+
+## Answer
+
+Implémenté sur `integration/tracabilite-gherkin` (revue de code appliquée). Voir `git log`.

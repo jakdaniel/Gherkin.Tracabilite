@@ -4,7 +4,7 @@
 
 **Blocked by:** 07
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 - [ ] Mots-clés FR et EN, insensibles à la casse et aux accents, espaces réduits, `:` avec ou sans espace, `QUE`/`QU'` facultatif, mot entier (`Exemples` ≠ `Exemple`)
 - [ ] Langue du premier mot-clé non ambigu ; `Scenario` et `But` ambigus ; `But` en Scénario français = texte libre dans la narration
@@ -13,3 +13,7 @@
 - [ ] Narration, commentaires `#`, lignes vides, tableaux ignorés ; docstrings et lignes inconnues en erreur
 - [ ] Structure : un seul `Scénario`, au moins un `ALORS`, pas de `ET`/`MAIS` en première étape, description non vide après la Clé
 - [ ] Un test unitaire par règle de la section 4, dont les cas obligatoires de la section 10 concernant le parser
+
+## Answer
+
+Implémenté sur `integration/tracabilite-gherkin` (revue de code appliquée). Voir `git log`.

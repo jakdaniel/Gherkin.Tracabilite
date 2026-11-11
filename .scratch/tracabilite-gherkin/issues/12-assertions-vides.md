@@ -4,7 +4,7 @@
 
 **Blocked by:** 11
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 - [ ] SCN014 : lambda `async` passé à `Verify`
 - [ ] SCN015 : `VerifyAsync` en instruction-expression ou affecté à `_`
@@ -12,3 +12,7 @@
 - [ ] SCN016 : `() => { }`, `async () => { }`, `() => Task.CompletedTask`
 - [ ] Si l'argument `cle` est invalide (SCN002), `{Cle}` est remplacé par le texte de l'argument dans les messages
 - [ ] Une Vérification refusée par SCN014, SCN015 ou SCN016 laisse la Clé sans Vérification : SCN001 est rapporté
+
+## Answer
+
+Implémenté sur `integration/tracabilite-gherkin` (revue de code appliquée). Voir `git log`.

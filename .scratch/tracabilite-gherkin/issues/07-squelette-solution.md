@@ -4,9 +4,13 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 - [ ] `dotnet build` de la solution réussit sans aucun warning, y compris RS1036, RS2008 et RS1026 sur l'analyzer
 - [ ] L'exemple compile en `TreatWarningsAsErrors`
 - [ ] `Verify` et `VerifyAsync` exécutent l'assertion et laissent remonter l'exception telle quelle (tests xUnit)
 - [ ] Le projet de tests référence l'analyzer et le runtime
+
+## Answer
+
+Implémenté sur `integration/tracabilite-gherkin` (revue de code appliquée). Voir `git log`.

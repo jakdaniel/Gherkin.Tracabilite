@@ -4,7 +4,7 @@
 
 **Blocked by:** 08
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 - [ ] `nameof({Methode}_Cles.{Cle})` compile dans la méthode de test
 - [ ] Hint name `{NomDeMetadonnees}.{Methode}.g.cs` : deux classes de même nom dans deux namespaces avec une méthode de même nom donnent deux fichiers distincts, sans erreur
@@ -13,3 +13,7 @@
 - [ ] Rien n'est émis pour SCN011, SCN012 et SCN013
 - [ ] SCN011 pointe le premier type non `partial` en partant de l'extérieur, avec la précision du message
 - [ ] Le générateur ne rapporte aucun diagnostic
+
+## Answer
+
+Implémenté sur `integration/tracabilite-gherkin` (revue de code appliquée). Voir `git log`.

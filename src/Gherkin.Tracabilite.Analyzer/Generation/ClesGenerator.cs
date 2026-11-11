@@ -45,14 +45,8 @@ public sealed class ClesGenerator : IIncrementalGenerator
             return null;
         }
 
-        // SCN013 : surcharges de méthodes [TestScenario].
-        if (MethodesScenario.EstSurchargee(methode))
-        {
-            return null;
-        }
-
-        // SCN011 : la classe de test et tous ses types englobants doivent être partial.
-        if (!MethodesScenario.Chaine(methode).All(MethodesScenario.EstPartielle))
+        // SCN011 et SCN013 : classes partial et méthode non surchargée (règle partagée avec l'analyzer).
+        if (!MethodesScenario.ClesEmises(methode))
         {
             return null;
         }
@@ -63,17 +57,9 @@ public sealed class ClesGenerator : IIncrementalGenerator
         return (nomFichier, Generer(methode, cles, objet));
     }
 
-    private static bool EstLitteral(AttributeData attribut, CancellationToken ct)
-    {
-        if (attribut.ApplicationSyntaxReference?.GetSyntax(ct) is not AttributeSyntax syntaxe
-            || syntaxe.ArgumentList is not { Arguments.Count: 1 } liste)
-        {
-            return false;
-        }
-
-        return liste.Arguments[0].Expression is LiteralExpressionSyntax litteral
-            && litteral.IsKind(SyntaxKind.StringLiteralExpression);
-    }
+    private static bool EstLitteral(AttributeData attribut, CancellationToken ct) =>
+        attribut.ApplicationSyntaxReference?.GetSyntax(ct) is AttributeSyntax syntaxe
+        && MethodesScenario.LitteralDuScenario(syntaxe) is not null;
 
     private static string Generer(IMethodSymbol methode, IReadOnlyList<string> cles, INamedTypeSymbol objet)
     {
@@ -94,7 +80,7 @@ public sealed class ClesGenerator : IIncrementalGenerator
             ouvertures++;
         }
 
-        Ouvrir(sb, ref profondeur, $"public static class {methode.Name}_Cles");
+        Ouvrir(sb, ref profondeur, $"public static class {MethodesScenario.NomClasseCles(methode.Name)}");
         ouvertures++;
 
         foreach (var cle in cles)

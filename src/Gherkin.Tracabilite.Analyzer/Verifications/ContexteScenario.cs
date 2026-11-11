@@ -49,7 +49,7 @@ internal sealed class ContexteScenario
     /// <summary>Analyse du Scénario, ou null si le Scénario n'est pas un littéral.</summary>
     internal AnalyseScenario? Analyse { get; }
 
-    /// <summary>Vrai si le générateur émet <c>{Methode}_Cles</c> pour cette méthode.</summary>
+    /// <summary>Vrai si le générateur émet <c>{Methode}_Cles</c> pour cette méthode (voir <see cref="MethodesScenario.ClesEmises"/>).</summary>
     internal bool ClesGenerees { get; }
 
     /// <summary>Clés valides du Scénario (vide si le Scénario n'est pas un littéral).</summary>
@@ -66,38 +66,19 @@ internal sealed class ContexteScenario
 
         var attribut = methode.AttributeLists
             .SelectMany(liste => liste.Attributes)
-            .FirstOrDefault(a => EstAttributTestScenario(a, modele, ct));
+            .FirstOrDefault(a => MethodesScenario.EstAttributTestScenario(a, modele, ct));
         if (attribut is null)
         {
             return null;
         }
 
-        var litteral = LitteralDuScenario(attribut);
+        var litteral = MethodesScenario.LitteralDuScenario(attribut);
         if (litteral is null)
         {
             return new ContexteScenario(methode, symbole, attribut, null, null, clesGenerees: false);
         }
 
         var analyse = ScenarioParser.Analyser(litteral.Value.ValueText, methode.Identifier.ValueText);
-        var generees = !MethodesScenario.EstSurchargee(symbole)
-            && MethodesScenario.Chaine(symbole).All(MethodesScenario.EstPartielle);
-
-        return new ContexteScenario(methode, symbole, attribut, litteral, analyse, generees);
-    }
-
-    private static bool EstAttributTestScenario(AttributeSyntax attribut, SemanticModel modele, CancellationToken ct) =>
-        modele.GetSymbolInfo(attribut, ct).Symbol is IMethodSymbol { ContainingType: { } type }
-        && type.ToDisplayString() == MethodesScenario.NomAttribut;
-
-    private static SyntaxToken? LitteralDuScenario(AttributeSyntax attribut)
-    {
-        if (attribut.ArgumentList is { Arguments.Count: 1 } liste
-            && liste.Arguments[0].Expression is LiteralExpressionSyntax litteral
-            && litteral.IsKind(SyntaxKind.StringLiteralExpression))
-        {
-            return litteral.Token;
-        }
-
-        return null;
+        return new ContexteScenario(methode, symbole, attribut, litteral, analyse, MethodesScenario.ClesEmises(symbole));
     }
 }

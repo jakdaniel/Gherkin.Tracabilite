@@ -1,3 +1,4 @@
+using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -9,13 +10,44 @@ internal static class MethodesScenario
 {
     internal const string NomAttribut = "Gherkin.Tracabilite.Runtime.TestScenarioAttribute";
 
+    /// <summary>Suffixe de la classe générée qui porte les Clés d'une méthode : <c>{Methode}_Cles</c>.</summary>
+    internal const string SuffixeCles = "_Cles";
+
     private static readonly SymbolDisplayFormat FormatNamespace = new SymbolDisplayFormat(
         globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.Omitted,
         typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
         miscellaneousOptions: SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers);
 
+    /// <summary>Nom de la classe générée qui porte les Clés de la méthode <paramref name="methode"/>.</summary>
+    internal static string NomClasseCles(string methode) => methode + SuffixeCles;
+
     internal static bool EstTestScenario(AttributeData attribut) =>
         attribut.AttributeClass is { } classe && classe.ToDisplayString() == NomAttribut;
+
+    /// <summary>Vrai si l'attribut de syntaxe est [TestScenario] (d'après sa liaison sémantique).</summary>
+    internal static bool EstAttributTestScenario(AttributeSyntax attribut, SemanticModel modele, CancellationToken ct) =>
+        modele.GetSymbolInfo(attribut, ct).Symbol is IMethodSymbol { ContainingType: { } type }
+        && type.ToDisplayString() == NomAttribut;
+
+    /// <summary>
+    /// Littéral de chaîne unique passé à l'attribut, ou null si l'attribut n'a pas exactement un argument
+    /// qui est un littéral de chaîne (SCN012).
+    /// </summary>
+    internal static SyntaxToken? LitteralDuScenario(AttributeSyntax attribut)
+    {
+        if (attribut.ArgumentList is { Arguments.Count: 1 } liste
+            && liste.Arguments[0].Expression is LiteralExpressionSyntax litteral
+            && litteral.IsKind(SyntaxKind.StringLiteralExpression))
+        {
+            return litteral.Token;
+        }
+
+        return null;
+    }
+
+    /// <summary>Vrai si le générateur émet la classe <c>{Methode}_Cles</c> : méthode non surchargée et types partial (SCN011, SCN013).</summary>
+    internal static bool ClesEmises(IMethodSymbol methode) =>
+        !EstSurchargee(methode) && Chaine(methode).All(EstPartielle);
 
     /// <summary>Vrai si plusieurs méthodes de même nom de la classe portent [TestScenario] (SCN013).</summary>
     internal static bool EstSurchargee(IMethodSymbol methode) =>

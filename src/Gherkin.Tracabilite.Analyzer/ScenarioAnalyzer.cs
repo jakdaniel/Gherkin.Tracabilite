@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using Gherkin.Tracabilite.Analyzer.Diagnostics;
+using Gherkin.Tracabilite.Analyzer.Generation;
 using Gherkin.Tracabilite.Analyzer.Parsing;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -16,8 +17,6 @@ namespace Gherkin.Tracabilite.Analyzer;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public sealed class ScenarioAnalyzer : DiagnosticAnalyzer
 {
-    private const string NomCompletAttribut = "Gherkin.Tracabilite.Runtime.TestScenarioAttribute";
-
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
         ImmutableArray.Create(
             DescripteursScenario.Scn003,
@@ -45,7 +44,7 @@ public sealed class ScenarioAnalyzer : DiagnosticAnalyzer
         {
             foreach (var attribut in liste.Attributes)
             {
-                if (!EstTestScenario(attribut, ctx))
+                if (!MethodesScenario.EstAttributTestScenario(attribut, ctx.SemanticModel, ctx.CancellationToken))
                 {
                     continue;
                 }
@@ -55,13 +54,6 @@ public sealed class ScenarioAnalyzer : DiagnosticAnalyzer
         }
     }
 
-    private static bool EstTestScenario(AttributeSyntax attribut, SyntaxNodeAnalysisContext ctx)
-    {
-        var symbole = ctx.SemanticModel.GetSymbolInfo(attribut, ctx.CancellationToken).Symbol;
-        return symbole is IMethodSymbol { ContainingType: { } type }
-            && type.ToDisplayString() == NomCompletAttribut;
-    }
-
     private static void AnalyserAttribut(SyntaxNodeAnalysisContext ctx, AttributeSyntax attribut, string methode)
     {
         if (attribut.ArgumentList is null || attribut.ArgumentList.Arguments.Count != 1)
@@ -69,16 +61,15 @@ public sealed class ScenarioAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        var expression = attribut.ArgumentList.Arguments[0].Expression;
-        if (expression is not LiteralExpressionSyntax litteral
-            || !litteral.IsKind(SyntaxKind.StringLiteralExpression))
+        var litteral = MethodesScenario.LitteralDuScenario(attribut);
+        if (litteral is null)
         {
             ctx.ReportDiagnostic(Diagnostic.Create(DescripteursScenario.Scn012, attribut.GetLocation(), methode));
             return;
         }
 
-        var analyse = ScenarioParser.Analyser(litteral.Token.ValueText, methode);
-        var contexte = new ContexteLocalisation(litteral.Token, attribut);
+        var analyse = ScenarioParser.Analyser(litteral.Value.ValueText, methode);
+        var contexte = new ContexteLocalisation(litteral.Value, attribut);
 
         foreach (var erreur in analyse.Erreurs)
         {
@@ -152,7 +143,7 @@ public sealed class ScenarioAnalyzer : DiagnosticAnalyzer
     {
         CauseCleInvalide.NonIdentifiant => "ce n'est pas un identifiant C# valide",
         CauseCleInvalide.MotReserve => "c'est un mot réservé",
-        _ => $"elle porte le nom de la classe générée {methode}_Cles",
+        _ => $"elle porte le nom de la classe générée {MethodesScenario.NomClasseCles(methode)}",
     };
 
     private static string TexteCauseStructure(CauseStructure cause) => cause switch

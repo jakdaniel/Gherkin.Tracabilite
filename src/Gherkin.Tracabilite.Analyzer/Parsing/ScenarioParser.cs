@@ -1,3 +1,5 @@
+using Gherkin.Tracabilite.Analyzer.Generation;
+
 namespace Gherkin.Tracabilite.Analyzer.Parsing;
 
 /// <summary>
@@ -327,7 +329,7 @@ internal static class ScenarioParser
                 return false;
             }
 
-            if (string.Equals(cle, _nomMethode + "_Cles", StringComparison.Ordinal))
+            if (string.Equals(cle, MethodesScenario.NomClasseCles(_nomMethode), StringComparison.Ordinal))
             {
                 _erreurs.Add(new CleInvalide(ligne, cle, CauseCleInvalide.NomClasseGeneree));
                 return false;

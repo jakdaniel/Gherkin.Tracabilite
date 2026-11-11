@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Gherkin.Tracabilite.Analyzer.Generation;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -124,7 +125,7 @@ internal sealed class Verification
     private static string? CleResolue(ExpressionSyntax argument, ContexteScenario contexte, SemanticModel modele, CancellationToken ct)
     {
         if (modele.GetSymbolInfo(CibleDeLaCle(argument), ct).Symbol is not IFieldSymbol { IsConst: true, ContainingType: { } cles } champ
-            || cles.Name != contexte.Methode + "_Cles"
+            || cles.Name != MethodesScenario.NomClasseCles(contexte.Methode)
             || !SymbolEqualityComparer.Default.Equals(cles.ContainingType, contexte.Classe)
             || champ.ConstantValue is not string valeur)
         {
@@ -137,7 +138,7 @@ internal sealed class Verification
     private static CauseCleVerification CauseInvalide(ExpressionSyntax argument, SemanticModel modele, CancellationToken ct)
     {
         if (modele.GetSymbolInfo(CibleDeLaCle(argument), ct).Symbol is IFieldSymbol { IsConst: true, ContainingType: { } cles }
-            && cles.Name.EndsWith("_Cles", StringComparison.Ordinal))
+            && cles.Name.EndsWith(MethodesScenario.SuffixeCles, StringComparison.Ordinal))
         {
             return CauseCleVerification.CleAutreScenario;
         }

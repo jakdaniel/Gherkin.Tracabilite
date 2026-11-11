@@ -32,6 +32,7 @@ Une **spec complète et tranchée** du composant de traçabilité (attribut `Tes
 - [Comportement de ScenarioAssert.Verify à l'exécution](issues/04-comportement-de-verify.md) : exécution pure, sans enveloppe ni enrichissement, arrêt au premier échec ; `VerifyAsync` séparé pour les assertions async.
 - [Catalogue des diagnostics](issues/05-catalogue-des-diagnostics.md) : SCN001 à SCN013, tous en erreur, rapportés par l'analyzer seul, avec des messages qui disent quoi, où et comment corriger.
 - Contrat avec le skill et stratégie de test : tranchés par grilling, consignés dans [spec.md](spec.md).
+- Revue de la spec avant implémentation (intégrée à [spec.md](spec.md), qui prime sur les tickets) : hint name au nom complet de métadonnées ; SCN011 étendu aux types englobants ; types génériques et `record` reproduits ; détection de langue sur le premier mot-clé non ambigu (`Scenario`, `But`) ; mots-clés FR ajoutés (`Étant donnée(s)`, `Sachant que`, `Donc`, `Exemple`) ; SCN014 lambda async dans `Verify`, SCN015 tâche de `VerifyAsync` ignorée, SCN016 assertion vide ; Clé `{Methode}_Cles` interdite (SCN005) ; analyzer sans warning RS et `global.json` sur le SDK 10.0.302.
 
 ## Not yet specified
 

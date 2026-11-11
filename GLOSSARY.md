@@ -9,7 +9,7 @@ Texte Gherkin (en français ou en anglais) attaché à une méthode de test, qui
 _Avoid_: feature, spec, cas de test
 
 **Résultat attendu** :
-Ligne `ALORS` / `THEN`, ou `ET` / `MAIS` / `AND` / `BUT` qui la suit, portant une Clé ; c'est l'unité de traçabilité.
+Ligne `ALORS` / `DONC` / `THEN`, ou `ET` / `MAIS` / `AND` / `BUT` qui la suit, portant une Clé ; c'est l'unité de traçabilité.
 _Avoid_: ExpectedResult, assertion attendue, critère
 
 **Clé** :

@@ -102,14 +102,10 @@ internal sealed class LigneNonReconnue : ErreurScenario
 {
     internal LigneNonReconnue(LigneScenario ligne, Langue? langue) : base(ligne)
     {
-        Langue = langue;
         MotsClesAttendus = MotsCles.Attendus(langue);
     }
 
     public override string Code => "SCN008";
-
-    /// <summary>Langue détectée du Scénario, ou null si elle ne l'est pas.</summary>
-    public Langue? Langue { get; }
 
     /// <summary>Mots-clés attendus pour la langue détectée (les deux langues si elle est inconnue).</summary>
     public IReadOnlyList<string> MotsClesAttendus { get; }

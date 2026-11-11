@@ -28,22 +28,18 @@ internal enum CauseCleVerification
 internal sealed class Verification
 {
     private Verification(
-        InvocationExpressionSyntax appel,
         string nom,
         ExpressionSyntax argument,
         string? cle,
         CauseCleVerification? cause,
         IReadOnlyList<FauteAssertion> fautes)
     {
-        Appel = appel;
         Nom = nom;
         Argument = argument;
         Cle = cle;
         Cause = cause;
         Fautes = fautes;
     }
-
-    internal InvocationExpressionSyntax Appel { get; }
 
     /// <summary>Nom de l'appel : <c>Verify</c> ou <c>VerifyAsync</c>.</summary>
     internal string Nom { get; }
@@ -110,7 +106,7 @@ internal sealed class Verification
         var argument = appel.ArgumentList.Arguments[0].Expression;
         var cle = CleResolue(argument, contexte, modele, ct);
         var cause = cle is null ? CauseInvalide(argument, modele, ct) : (CauseCleVerification?)null;
-        return new Verification(appel, nom, argument, cle, cause, AssertionsFautives.Detecter(appel, nom, modele, ct));
+        return new Verification(nom, argument, cle, cause, AssertionsFautives.Detecter(appel, nom, modele, ct));
     }
 
     /// <summary>Expression désignant la Clé : l'argument de <c>nameof</c>, ou l'argument lui-même.</summary>

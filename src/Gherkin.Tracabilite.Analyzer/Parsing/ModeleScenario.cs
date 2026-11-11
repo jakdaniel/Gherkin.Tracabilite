@@ -62,8 +62,6 @@ internal sealed class LigneScenario
     /// <summary>Mot-clé tel qu'écrit (ex. « Étant donnée que »), ou null pour une ligne sans mot-clé.</summary>
     public string? MotCle { get; internal set; }
 
-    /// <summary>Langue du mot-clé, ou null si le mot-clé est ambigu (Scenario, But) ou absent.</summary>
-    public Langue? LangueMot { get; internal set; }
 }
 
 /// <summary>Une étape (Contexte, Action, Résultat ou Prolongement) du Scénario.</summary>

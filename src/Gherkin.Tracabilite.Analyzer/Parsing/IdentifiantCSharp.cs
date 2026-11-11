@@ -20,7 +20,8 @@ internal static class IdentifiantCSharp
 
     /// <summary>
     /// Vrai si <paramref name="s"/> est composé de lettres Unicode, chiffres et « _ », sans commencer par un chiffre.
-    /// Les caractères hors BMP sont refusés.
+    /// Les caractères hors BMP (paires de surrogates) sont refusés : Roslyn ne les accepte pas dans un identifiant (CS1056),
+    /// donc une Clé qui en contient produirait un code généré non compilable.
     /// </summary>
     internal static bool EstIdentifiant(string s)
     {
@@ -31,15 +32,19 @@ internal static class IdentifiantCSharp
 
         for (var i = 0; i < s.Length; i++)
         {
-            var c = s[i];
-            var categorie = CharUnicodeInfo.GetUnicodeCategory(c);
+            if (char.IsSurrogate(s[i]))
+            {
+                return false;
+            }
+
+            var categorie = CharUnicodeInfo.GetUnicodeCategory(s, i);
             var lettre = categorie == UnicodeCategory.UppercaseLetter
                 || categorie == UnicodeCategory.LowercaseLetter
                 || categorie == UnicodeCategory.TitlecaseLetter
                 || categorie == UnicodeCategory.ModifierLetter
                 || categorie == UnicodeCategory.OtherLetter
                 || categorie == UnicodeCategory.LetterNumber;
-            var souligne = c == '_';
+            var souligne = s[i] == '_';
 
             if (i == 0)
             {

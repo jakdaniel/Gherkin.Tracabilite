@@ -203,6 +203,21 @@ public class ScenarioParserResultatsTests
         Assert.Contains(analyse.Erreurs, e => e is LigneNonReconnue);
     }
 
+    // Roslyn refuse les caractères hors BMP dans un identifiant (CS1056) : ces Clés sont SCN005, même si la catégorie Unicode est une lettre.
+    [Theory]
+    [InlineData("Clé", true)]
+    [InlineData("a\U0001D465", false)]
+    [InlineData("\U0001D465a", false)]
+    [InlineData("a\U0001D7D9", false)]
+    [InlineData("a\uD835", false)]
+    public void Cles_avec_caracteres_hors_BMP_sont_SCN005(string cle, bool valide)
+    {
+        var analyse = Analyser($"Scénario :\nQuand a\nAlors[{cle}] x");
+
+        Assert.Equal(valide ? new[] { cle } : Array.Empty<string>(), analyse.ClesValides);
+        Assert.Equal(valide ? Array.Empty<string>() : new[] { "SCN005" }, Codes(analyse).ToArray());
+    }
+
     [Fact]
     public void Structure_et_en_premiere_etape_est_SCN007()
     {

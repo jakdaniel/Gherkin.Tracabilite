@@ -37,6 +37,7 @@ internal static class ScenarioParser
         private bool _fonctionnaliteVue;
         private bool _scenarioVu;
         private bool _etapeVue;
+        private bool _resultatVu;
         private Role _dernierRoleEtape = Role.Ignoree;
 
         internal Analyseur(string texte, string nomMethode)
@@ -159,7 +160,12 @@ internal static class ScenarioParser
             }
 
             ligne.MotCle = reconnu.MotCle;
-            ligne.LangueMot = reconnu.Mot.Langue;
+
+            // Un ALORS vu avant l'en-tête Scénario (SCN008) compte tout de même : seule l'absence de ligne Scénario est signalée.
+            if (reconnu.Mot.Role == Role.Resultat)
+            {
+                _resultatVu = true;
+            }
 
             if (!_melangeSignale && _langue != null && reconnu.Mot.Langue != null && reconnu.Mot.Langue != _langue)
             {
@@ -370,17 +376,7 @@ internal static class ScenarioParser
                 _erreurs.Add(new StructureInvalide(null, CauseStructure.AucuneLigneScenario));
             }
 
-            var aAlors = false;
-            foreach (var etape in _etapes)
-            {
-                if (etape.Ligne.Role == Role.Resultat)
-                {
-                    aAlors = true;
-                    break;
-                }
-            }
-
-            if (!aAlors)
+            if (!_resultatVu)
             {
                 _erreurs.Add(new StructureInvalide(null, CauseStructure.AucunAlors));
             }

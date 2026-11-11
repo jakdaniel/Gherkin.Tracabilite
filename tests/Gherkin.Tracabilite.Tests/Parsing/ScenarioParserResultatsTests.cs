@@ -193,6 +193,17 @@ public class ScenarioParserResultatsTests
     }
 
     [Fact]
+    public void Alors_avant_l_entete_scenario_ne_rapporte_pas_aucun_alors()
+    {
+        var analyse = Analyser("Alors[Cle] x");
+
+        Assert.DoesNotContain(analyse.Erreurs, e => e is StructureInvalide s && s.Cause == CauseStructure.AucunAlors);
+        Assert.Contains(analyse.Erreurs, e => e is StructureInvalide s
+            && s.Cause == CauseStructure.AucuneLigneScenario && s.Ligne == null);
+        Assert.Contains(analyse.Erreurs, e => e is LigneNonReconnue);
+    }
+
+    [Fact]
     public void Structure_et_en_premiere_etape_est_SCN007()
     {
         var analyse = Analyser("Scénario :\nEt un\nAlors[A] x");

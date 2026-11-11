@@ -109,6 +109,25 @@ public class VerificationsAnalyzerTests
         Assert.Equal(DiagnosticSeverity.Error, diagnostic.Severity);
     }
 
+    [Theory]
+    [InlineData("const string Autre = \"Autre\";", "nameof(Autre)", "chaîne littérale")]
+    [InlineData("var Autre = \"Autre\";", "Autre", "valeur non constante")]
+    public async Task SCN002_argument_constant_ou_non_est_classe_selon_sa_constance(string declaration, string argument, string cause)
+    {
+        var corps = declaration + "\n"
+            + $"ScenarioAssert.Verify({argument}, () => {{ }});\n"
+            + "ScenarioAssert.Verify(nameof(CreerTache_Cles.TacheEnregistree), () => { });\n"
+            + "ScenarioAssert.Verify(nameof(CreerTache_Cles.Notification), () => { });";
+        var code = SourceAvecCorps(ScenarioDeuxResultats, corps);
+
+        var diagnostic = Assert.Single(Filtrer(await AnalyserVerificationsAsync(code), "SCN002"));
+
+        Assert.Equal(
+            "L'argument de Verify doit être une Clé du Scénario de 'CreerTache', écrite nameof(CreerTache_Cles.<Clé>). "
+            + $"Reçu : {argument} ({cause}). Clés disponibles : TacheEnregistree, Notification.",
+            diagnostic.GetMessage());
+    }
+
     [Fact]
     public async Task SCN002_cle_d_un_autre_scenario_est_signalee()
     {

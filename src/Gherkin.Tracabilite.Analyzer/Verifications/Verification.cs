@@ -142,7 +142,8 @@ internal sealed class Verification
             return CauseCleVerification.CleAutreScenario;
         }
 
-        if (!EstNameof(argument) && modele.GetConstantValue(argument, ct).Value is string)
+        // Expression constante qui n'est pas une Clé du Scénario (nameof(Autre) compris) : chaîne littérale.
+        if (modele.GetConstantValue(argument, ct).Value is string)
         {
             return CauseCleVerification.ChaineLitterale;
         }

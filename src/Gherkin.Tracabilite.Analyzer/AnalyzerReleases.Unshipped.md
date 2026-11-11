@@ -15,3 +15,6 @@ SCN009 | Tracabilite | Error | Langue mélangée dans un Scénario
 SCN012 | Tracabilite | Error | Scénario qui n'est pas un littéral
 SCN011 | Tracabilite | Error | Classe de test ou type englobant non partial
 SCN013 | Tracabilite | Error | Surcharge de méthode [TestScenario]
+SCN001 | Tracabilite | Error | Résultat attendu sans Vérification
+SCN002 | Tracabilite | Error | Argument de Verify qui n'est pas une Clé du Scénario
+SCN010 | Tracabilite | Error | Vérification hors d'une méthode [TestScenario]

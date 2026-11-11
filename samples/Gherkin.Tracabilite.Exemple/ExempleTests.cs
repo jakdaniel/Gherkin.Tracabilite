@@ -12,5 +12,15 @@ public partial class ExempleTests
         """)]
     public void EnregistrerTache()
     {
+        var taches = new List<string>();
+        taches.Add("Tâche à créer");
+
+        ScenarioAssert.Verify(nameof(EnregistrerTache_Cles.TacheEnregistree), () =>
+        {
+            if (taches.Count != 1)
+            {
+                throw new InvalidOperationException("La tâche n'est pas enregistrée.");
+            }
+        });
     }
 }

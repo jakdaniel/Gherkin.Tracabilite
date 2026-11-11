@@ -13,3 +13,5 @@ SCN007 | Tracabilite | Error | Structure du Scénario invalide
 SCN008 | Tracabilite | Error | Ligne non reconnue dans un Scénario
 SCN009 | Tracabilite | Error | Langue mélangée dans un Scénario
 SCN012 | Tracabilite | Error | Scénario qui n'est pas un littéral
+SCN011 | Tracabilite | Error | Classe de test ou type englobant non partial
+SCN013 | Tracabilite | Error | Surcharge de méthode [TestScenario]

@@ -8,7 +8,7 @@ public partial class ExempleTests
         Scénario : Enregistrer une tâche
             Soit une tâche à créer
             Quand la tâche est enregistrée
-            Alors la tâche est enregistrée
+            Alors[TacheEnregistree] la tâche est enregistrée
         """)]
     public void EnregistrerTache()
     {

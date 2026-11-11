@@ -57,6 +57,9 @@ internal static class CompilationTestes
     internal static IEnumerable<Diagnostic> Erreurs(Compilation compilation) =>
         compilation.GetDiagnostics().Where(d => d.Severity == DiagnosticSeverity.Error);
 
+    internal static IEnumerable<Diagnostic> Avertissements(Compilation compilation) =>
+        compilation.GetDiagnostics().Where(d => d.Severity == DiagnosticSeverity.Warning);
+
     private static ImmutableArray<MetadataReference> CreerReferences()
     {
         var references = new List<MetadataReference>();

@@ -117,7 +117,7 @@ public class ClesGeneratorTests
         var resultat = CompilationTestes.Generer(CompilationTestes.Fichier(CompilationTestes.Classe("public partial class TacheTests").Replace(CompilationTestes.Methode, methode)));
 
         Assert.Empty(CompilationTestes.Erreurs(resultat.Sortie));
-        Assert.Empty(resultat.Sortie.GetDiagnostics().Where(d => d.Severity == Microsoft.CodeAnalysis.DiagnosticSeverity.Warning));
+        Assert.Empty(CompilationTestes.Avertissements(resultat.Sortie));
     }
 
     [Fact]

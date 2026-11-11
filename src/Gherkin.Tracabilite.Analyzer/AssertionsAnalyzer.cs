@@ -53,10 +53,10 @@ public sealed class AssertionsAnalyzer : DiagnosticAnalyzer
         // {Cle} est le texte de l'argument si celui-ci n'est pas une Clé valide (SCN002).
         var cle = verification.Cle ?? verification.TexteArgument;
         var description = verification.Cle is null
-            ? string.Empty
+            ? "?"
             : contexte.Analyse?.Etapes
                 .FirstOrDefault(e => e.EstResultatAttendu && e.Cle == verification.Cle)?.Description
-              ?? string.Empty;
+              ?? "?";
 
         foreach (var faute in verification.Fautes)
         {

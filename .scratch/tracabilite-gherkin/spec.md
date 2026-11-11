@@ -87,7 +87,8 @@ Insensibles à la casse et aux accents ; espaces multiples réduits à un ; espa
 ### Lignes
 
 - Lignes vides, indentation et commentaires `#` : ignorés.
-- Narration et texte libre : permis uniquement entre l'en-tête `Scénario` et la première étape.
+- Narration (`En tant que`, `Je veux`, `Afin de`) : permise avant la première étape, y compris sous `Fonctionnalité` (récit de la fonctionnalité). Texte libre : permis uniquement entre l'en-tête `Scénario` et la première étape.
+- Une seconde ligne `Fonctionnalité`, ou une étape (contexte, action, résultat) avant l'en-tête `Scénario` → SCN008. Un `ALORS` rejeté pour cette raison ne déclenche pas SCN007 « aucun ALORS » : seul « aucune ligne Scénario » est rapporté.
 - Tableaux `| … |` rattachés à une étape : acceptés et ignorés.
 - Docstrings et toute autre ligne : SCN008.
 
@@ -150,6 +151,8 @@ Ces trois cas compilent et font passer le test même quand le comportement est f
 - **`VerifyAsync` dont la tâche est ignorée** (SCN015) : l'assertion n'est jamais attendue. Condition : l'appel est une instruction-expression ou est affecté à `_`. Toute autre utilisation de la tâche (`await`, variable, argument de `Task.WhenAll`, `return`) est acceptée.
 - **Assertion vide** (SCN016) : le second argument est une fonction anonyme dont le corps est un bloc vide (`() => { }`, `async () => { }`), ou dont le corps-expression est `Task.CompletedTask`.
 
+Un lambda `async () => { }` passé à `Verify` cumule SCN014 et SCN016 (deux défauts distincts).
+
 Au-delà, l'analyzer ne juge pas la pertinence de l'assertion (voir section 9).
 
 ## 7. Analyzer
@@ -181,7 +184,9 @@ Tous en `error` par défaut, catégorie `Tracabilite`, réglables par `dotnet_di
 | SCN015 | Tâche de `VerifyAsync` ignorée | appel | `La Vérification de [{Cle}] appelle VerifyAsync sans utiliser la tâche retournée : l'assertion ne serait pas attendue. Ajoutez await devant ScenarioAssert.VerifyAsync(…).` |
 | SCN016 | Assertion vide | lambda | `La Vérification de [{Cle}] a une assertion vide : elle ne vérifie rien. Écrivez dans le lambda l'assertion qui prouve le Résultat attendu « {Description} ».` |
 
-Pour SCN014 à SCN016, si l'argument `cle` n'est pas une Clé valide (SCN002), `{Cle}` est remplacé par le texte de l'argument.
+Pour SCN014 à SCN016, si l'argument `cle` n'est pas une Clé valide (SCN002), `{Cle}` est remplacé par le texte de l'argument ; pour SCN016, `{Description}` (introuvable sans Clé) est alors remplacé par `?`.
+
+SCN001 et SCN002 ne sont rapportés que si la classe `{Methode}_Cles` est générée (littéral, méthode non surchargée, types `partial`) : sinon SCN011, SCN012 ou SCN013 s'applique déjà, et ils produiraient une cascade. Pour SCN010, `{Methode}` est le nom de la méthode ; hors méthode (constructeur, accesseur, initialiseur), c'est le type englobant, ou `<fichier>` au niveau du fichier ; le message nomme l'appel réel (`Verify` ou `VerifyAsync`).
 
 ## 9. Contrat avec le skill
 

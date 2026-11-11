@@ -23,3 +23,15 @@ _Avoid_: check, assert, verify (comme nom)
 **Clés générées** :
 Classe `{Methode}_Cles` produite par le générateur dans la classe de test, avec une constante par Clé du Scénario ; c'est la seule façon pour une Vérification de désigner une Clé.
 _Avoid_: constantes, symboles générés, type de clés
+
+**Étape** :
+Ligne d'un Scénario introduite par un mot-clé de contexte, d'action ou de résultat (`SOIT`/`ÉTANT DONNÉ`, `LORSQUE`, `ALORS`, `ET`/`MAIS` et équivalents EN) ; seules les étapes de résultat portent une Clé.
+_Avoid_: step
+
+**Contexte** :
+Étape `SOIT` / `ÉTANT DONNÉ` / `GIVEN` qui pose la situation initiale. Distinct du `Contexte`/`Background` Gherkin, hors périmètre.
+_Avoid_: précondition, background
+
+**Vérification fautive** :
+Vérification refusée par SCN014, SCN015 ou SCN016 parce que son assertion ne serait pas observée ou ne vérifierait rien ; elle ne compte pas pour la couverture de sa Clé (SCN001).
+_Avoid_: faux positif

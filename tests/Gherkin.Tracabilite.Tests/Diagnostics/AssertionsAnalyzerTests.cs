@@ -205,6 +205,23 @@ public class AssertionsAnalyzerTests
     }
 
     [Fact]
+    public async Task SCN016_cle_invalide_remplace_cle_par_l_argument_et_description_par_un_point_d_interrogation()
+    {
+        var code = SourceAvecCorps("""
+            ScenarioAssert.Verify("Inconnue", () => { });
+            ScenarioAssert.Verify(nameof(CreerTache_Cles.TacheEnregistree), () => { var x = 1; });
+            ScenarioAssert.Verify(nameof(CreerTache_Cles.Notification), () => { var x = 1; });
+            """);
+
+        var diagnostic = Assert.Single(Filtrer(await AnalyserAsync(code), "SCN016"));
+
+        Assert.Equal(
+            "La Vérification de [\"Inconnue\"] a une assertion vide : elle ne vérifie rien. "
+            + "Écrivez dans le lambda l'assertion qui prouve le Résultat attendu « ? ».",
+            diagnostic.GetMessage());
+    }
+
+    [Fact]
     public async Task SCN016_lambda_avec_corps_n_est_pas_signale()
     {
         var code = SourceAvecCorps("""

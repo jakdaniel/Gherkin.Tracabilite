@@ -146,6 +146,30 @@ public class AssertionsAnalyzerTests
     }
 
     [Fact]
+    public async Task SCN015_lambda_corps_expression_converti_en_void_perd_la_tache_et_est_signale()
+    {
+        var code = SourceAvecCorps("""
+            System.Action a = () => ScenarioAssert.VerifyAsync(nameof(CreerTache_Cles.TacheEnregistree), async () => { var x = 1; });
+            ScenarioAssert.Verify(nameof(CreerTache_Cles.Notification), () => { var x = 1; });
+            """);
+
+        var diagnostic = Assert.Single(Filtrer(await AnalyserAsync(code), "SCN015"));
+
+        Assert.Equal(PositionExacte(code, "ScenarioAssert.VerifyAsync(nameof(CreerTache_Cles.TacheEnregistree)"), PositionDiagnostic(diagnostic));
+    }
+
+    [Theory]
+    [InlineData("System.Func<Task> f = () => ScenarioAssert.VerifyAsync(nameof(CreerTache_Cles.TacheEnregistree), async () => { var x = 1; });")]
+    [InlineData("System.Func<Task> f = () => { return ScenarioAssert.VerifyAsync(nameof(CreerTache_Cles.TacheEnregistree), async () => { var x = 1; }); };")]
+    [InlineData("System.Action a = async () => await ScenarioAssert.VerifyAsync(nameof(CreerTache_Cles.TacheEnregistree), async () => { var x = 1; });")]
+    public async Task SCN015_lambda_qui_retourne_la_tache_est_accepte(string corps)
+    {
+        var code = SourceAvecCorps(corps + "\nScenarioAssert.Verify(nameof(CreerTache_Cles.Notification), () => { var x = 1; });");
+
+        Assert.Empty(Filtrer(await AnalyserAsync(code), "SCN015"));
+    }
+
+    [Fact]
     public async Task SCN015_cle_invalide_remplace_cle_par_le_texte_de_l_argument()
     {
         var code = SourceAvecCorps("""

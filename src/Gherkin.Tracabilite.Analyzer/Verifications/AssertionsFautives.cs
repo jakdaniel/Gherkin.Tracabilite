@@ -51,7 +51,7 @@ internal static class AssertionsFautives
             }
         }
 
-        if (nom == "VerifyAsync" && EstTacheIgnoree(appel))
+        if (nom == "VerifyAsync" && EstTacheIgnoree(appel, modele, ct))
         {
             fautes.Add(new FauteAssertion(DescripteursAssertions.Scn015, appel));
         }
@@ -72,16 +72,25 @@ internal static class AssertionsFautives
             && type.ToDisplayString() == "System.Threading.Tasks.Task";
     }
 
-    /// <summary>Appel en instruction-expression ou affecté à <c>_</c> : la tâche n'est ni attendue ni utilisée.</summary>
-    private static bool EstTacheIgnoree(InvocationExpressionSyntax appel)
+    /// <summary>
+    /// Appel dont la tâche est perdue : instruction-expression, affectation à <c>_</c>, ou corps-expression
+    /// d'un lambda converti en délégué <c>void</c> (la tâche n'est alors ni attendue ni retournée).
+    /// </summary>
+    private static bool EstTacheIgnoree(InvocationExpressionSyntax appel, SemanticModel modele, CancellationToken ct)
     {
         if (appel.Parent is ExpressionStatementSyntax)
         {
             return true;
         }
 
-        return appel.Parent is AssignmentExpressionSyntax affectation
-            && affectation.Right == appel
-            && affectation.Left is IdentifierNameSyntax { Identifier.ValueText: "_" };
+        if (appel.Parent is AssignmentExpressionSyntax affectation)
+        {
+            return affectation.Right == appel
+                && affectation.Left is IdentifierNameSyntax { Identifier.ValueText: "_" };
+        }
+
+        return appel.Parent is LambdaExpressionSyntax lambda
+            && lambda.Body == appel
+            && modele.GetTypeInfo(lambda, ct).ConvertedType is INamedTypeSymbol { DelegateInvokeMethod: { ReturnsVoid: true } };
     }
 }

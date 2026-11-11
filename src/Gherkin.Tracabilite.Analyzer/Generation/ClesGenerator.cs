@@ -59,7 +59,8 @@ public sealed class ClesGenerator : IIncrementalGenerator
 
         var cles = ScenarioParser.Analyser(texte, methode.Name).ClesValides;
         var nomFichier = MethodesScenario.NomDeMetadonnees(methode) + "." + methode.Name + ".g.cs";
-        return (nomFichier, Generer(methode, cles));
+        var objet = ctx.SemanticModel.Compilation.GetSpecialType(SpecialType.System_Object);
+        return (nomFichier, Generer(methode, cles, objet));
     }
 
     private static bool EstLitteral(AttributeData attribut, CancellationToken ct)
@@ -74,7 +75,7 @@ public sealed class ClesGenerator : IIncrementalGenerator
             && litteral.IsKind(SyntaxKind.StringLiteralExpression);
     }
 
-    private static string Generer(IMethodSymbol methode, IReadOnlyList<string> cles)
+    private static string Generer(IMethodSymbol methode, IReadOnlyList<string> cles, INamedTypeSymbol objet)
     {
         var sb = new StringBuilder();
         var profondeur = 0;
@@ -98,7 +99,9 @@ public sealed class ClesGenerator : IIncrementalGenerator
 
         foreach (var cle in cles)
         {
-            Ecrire(sb, profondeur, $"public const string {cle} = \"{cle}\";");
+            // Une Clé qui porte le nom d'un membre de object (Equals, ToString…) masque ce membre : CS0108 sans « new ».
+            var masque = objet.GetMembers(cle).Length > 0 ? "new " : string.Empty;
+            Ecrire(sb, profondeur, $"public {masque}const string {cle} = \"{cle}\";");
         }
 
         for (var i = 0; i < ouvertures; i++)

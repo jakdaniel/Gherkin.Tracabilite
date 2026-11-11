@@ -101,6 +101,26 @@ public class ClesGeneratorTests
     }
 
     [Fact]
+    public void Cles_nommees_comme_un_membre_d_object_ne_produisent_aucun_avertissement()
+    {
+        var methode = """
+            [TestScenario("Scénario : Creer\nALORS[Equals] egal\nALORS[ToString] texte\nALORS[GetHashCode] hash\nALORS[GetType] type")]
+            public void Creer()
+            {
+                ScenarioAssert.Verify(nameof(Creer_Cles.Equals), () => { });
+                ScenarioAssert.Verify(nameof(Creer_Cles.ToString), () => { });
+                ScenarioAssert.Verify(nameof(Creer_Cles.GetHashCode), () => { });
+                ScenarioAssert.Verify(nameof(Creer_Cles.GetType), () => { });
+            }
+            """;
+
+        var resultat = CompilationTestes.Generer(CompilationTestes.Fichier(CompilationTestes.Classe("public partial class TacheTests").Replace(CompilationTestes.Methode, methode)));
+
+        Assert.Empty(CompilationTestes.Erreurs(resultat.Sortie));
+        Assert.Empty(resultat.Sortie.GetDiagnostics().Where(d => d.Severity == Microsoft.CodeAnalysis.DiagnosticSeverity.Warning));
+    }
+
+    [Fact]
     public void Rien_n_est_emis_si_la_classe_de_test_n_est_pas_partial()
     {
         var resultat = CompilationTestes.Generer(CompilationTestes.Fichier(CompilationTestes.Classe("public class TacheTests")));

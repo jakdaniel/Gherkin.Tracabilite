@@ -60,8 +60,8 @@ public class VerificationsAnalyzerTests
     public async Task Verification_nameof_et_constante_directe_sont_acceptees()
     {
         var code = SourceAvecCorps(ScenarioDeuxResultats, """
-            ScenarioAssert.Verify(nameof(CreerTache_Cles.TacheEnregistree), () => { });
-            ScenarioAssert.Verify(CreerTache_Cles.Notification, () => { });
+            ScenarioAssert.Verify(nameof(CreerTache_Cles.TacheEnregistree), () => { var x = 1; });
+            ScenarioAssert.Verify(CreerTache_Cles.Notification, () => { var x = 1; });
             """);
 
         Assert.Empty(await AnalyserVerificationsAsync(code));
@@ -71,22 +71,22 @@ public class VerificationsAnalyzerTests
     public async Task Plusieurs_verifications_d_une_meme_cle_sont_acceptees()
     {
         var code = SourceAvecCorps(ScenarioDeuxResultats, """
-            ScenarioAssert.Verify(nameof(CreerTache_Cles.TacheEnregistree), () => { });
-            ScenarioAssert.Verify(nameof(CreerTache_Cles.TacheEnregistree), () => { });
-            ScenarioAssert.Verify(nameof(CreerTache_Cles.Notification), () => { });
+            ScenarioAssert.Verify(nameof(CreerTache_Cles.TacheEnregistree), () => { var x = 1; });
+            ScenarioAssert.Verify(nameof(CreerTache_Cles.TacheEnregistree), () => { var x = 1; });
+            ScenarioAssert.Verify(nameof(CreerTache_Cles.Notification), () => { var x = 1; });
             """);
 
         Assert.Empty(await AnalyserVerificationsAsync(code));
     }
 
     [Theory]
-    [InlineData("if (true)\n{\n    ScenarioAssert.Verify(nameof(CreerTache_Cles.TacheEnregistree), () => { });\n}")]
-    [InlineData("foreach (var i in new[] { 1 })\n{\n    ScenarioAssert.Verify(nameof(CreerTache_Cles.TacheEnregistree), () => { });\n}")]
-    [InlineData("void Verifier()\n{\n    ScenarioAssert.Verify(nameof(CreerTache_Cles.TacheEnregistree), () => { });\n}")]
-    [InlineData("Action a = () => ScenarioAssert.Verify(nameof(CreerTache_Cles.TacheEnregistree), () => { });")]
+    [InlineData("if (true)\n{\n    ScenarioAssert.Verify(nameof(CreerTache_Cles.TacheEnregistree), () => { var x = 1; });\n}")]
+    [InlineData("foreach (var i in new[] { 1 })\n{\n    ScenarioAssert.Verify(nameof(CreerTache_Cles.TacheEnregistree), () => { var x = 1; });\n}")]
+    [InlineData("void Verifier()\n{\n    ScenarioAssert.Verify(nameof(CreerTache_Cles.TacheEnregistree), () => { var x = 1; });\n}")]
+    [InlineData("Action a = () => ScenarioAssert.Verify(nameof(CreerTache_Cles.TacheEnregistree), () => { var x = 1; });")]
     public async Task Verification_dans_if_boucle_fonction_locale_ou_lambda_est_comptee(string corps)
     {
-        var code = SourceAvecCorps(ScenarioDeuxResultats, corps + "\nScenarioAssert.Verify(nameof(CreerTache_Cles.Notification), () => { });");
+        var code = SourceAvecCorps(ScenarioDeuxResultats, corps + "\nScenarioAssert.Verify(nameof(CreerTache_Cles.Notification), () => { var x = 1; });");
 
         Assert.Empty(await AnalyserVerificationsAsync(code));
     }

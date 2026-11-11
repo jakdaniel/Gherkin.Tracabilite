@@ -27,7 +27,10 @@ public sealed class VerificationsAnalyzer : DiagnosticAnalyzer
         context.RegisterSyntaxNodeAction(AnalyserMethode, SyntaxKind.MethodDeclaration);
     }
 
-    /// <summary>SCN001 : chaque Résultat attendu à Clé valide doit avoir au moins une Vérification de sa Clé.</summary>
+    /// <summary>
+    /// SCN001 : chaque Résultat attendu à Clé valide doit avoir au moins une Vérification valable de sa Clé.
+    /// Une Vérification fautive (SCN014 à SCN016) ne compte pas.
+    /// </summary>
     private static void AnalyserMethode(SyntaxNodeAnalysisContext ctx)
     {
         var methode = (MethodDeclarationSyntax)ctx.Node;
@@ -39,7 +42,7 @@ public sealed class VerificationsAnalyzer : DiagnosticAnalyzer
 
         var couvertes = new HashSet<string>(
             Verification.Collecter(methode, contexte, ctx.SemanticModel, ctx.CancellationToken)
-                .Where(v => v.Cle is not null)
+                .Where(v => v.Cle is not null && !v.Fautive)
                 .Select(v => v.Cle!),
             StringComparer.Ordinal);
 

@@ -18,3 +18,6 @@ SCN013 | Tracabilite | Error | Surcharge de méthode [TestScenario]
 SCN001 | Tracabilite | Error | Résultat attendu sans Vérification
 SCN002 | Tracabilite | Error | Argument de Verify qui n'est pas une Clé du Scénario
 SCN010 | Tracabilite | Error | Vérification hors d'une méthode [TestScenario]
+SCN014 | Tracabilite | Error | Lambda async passé à Verify
+SCN015 | Tracabilite | Error | Tâche de VerifyAsync ignorée
+SCN016 | Tracabilite | Error | Assertion vide

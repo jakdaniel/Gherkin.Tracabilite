@@ -26,13 +26,20 @@ internal enum CauseCleVerification
 /// </summary>
 internal sealed class Verification
 {
-    private Verification(InvocationExpressionSyntax appel, string nom, ExpressionSyntax argument, string? cle, CauseCleVerification? cause)
+    private Verification(
+        InvocationExpressionSyntax appel,
+        string nom,
+        ExpressionSyntax argument,
+        string? cle,
+        CauseCleVerification? cause,
+        IReadOnlyList<FauteAssertion> fautes)
     {
         Appel = appel;
         Nom = nom;
         Argument = argument;
         Cle = cle;
         Cause = cause;
+        Fautes = fautes;
     }
 
     internal InvocationExpressionSyntax Appel { get; }
@@ -51,6 +58,12 @@ internal sealed class Verification
 
     /// <summary>Cause de l'invalidité de l'argument, ou null si <see cref="Cle"/> est résolue.</summary>
     internal CauseCleVerification? Cause { get; }
+
+    /// <summary>Assertions qui ne vérifient rien (SCN014 à SCN016) ; vide si la Vérification est valable.</summary>
+    internal IReadOnlyList<FauteAssertion> Fautes { get; }
+
+    /// <summary>Vrai si la Vérification est fautive : elle ne compte pas pour SCN001 (spec §6).</summary>
+    internal bool Fautive => Fautes.Count > 0;
 
     /// <summary>
     /// Toutes les Vérifications dont la méthode propriétaire est <paramref name="methode"/>
@@ -96,7 +109,7 @@ internal sealed class Verification
         var argument = appel.ArgumentList.Arguments[0].Expression;
         var cle = CleResolue(argument, contexte, modele, ct);
         var cause = cle is null ? CauseInvalide(argument, modele, ct) : (CauseCleVerification?)null;
-        return new Verification(appel, nom, argument, cle, cause);
+        return new Verification(appel, nom, argument, cle, cause, AssertionsFautives.Detecter(appel, nom, modele, ct));
     }
 
     /// <summary>Expression désignant la Clé : l'argument de <c>nameof</c>, ou l'argument lui-même.</summary>
